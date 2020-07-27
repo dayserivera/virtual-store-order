@@ -8,12 +8,17 @@ import org.springframework.stereotype.Service;
 
 import com.techfeense.virtualstoreorder.data.ORDER_STATUS;
 import com.techfeense.virtualstoreorder.data.OrderEntity;
+import com.techfeense.virtualstoreorder.data.OrderItemEntity;
+import com.techfeense.virtualstoreorder.data.OrderItemRepository;
 import com.techfeense.virtualstoreorder.data.OrderRepository;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 	@Autowired
 	OrderRepository orderRepository;
+	
+	@Autowired
+	OrderItemRepository orderItemRepository;
 	
 	@Override
 	public OrderEntity createOrder(OrderEntity order) {
@@ -24,6 +29,17 @@ public class OrderServiceImpl implements OrderService {
 		orderRepository.save(order);
 		
 		return order;
+	}
+
+	@Override
+	public OrderItemEntity addOrderItem(OrderItemEntity orderItem) {
+		OrderEntity order = orderRepository.findByOrderId(orderItem.getOrder().getOrderId());
+		orderItem.setOrder(order);
+		orderItem.setTotalPrice(orderItem.getUnitPrice() * orderItem.getQuantity());
+		
+		orderItemRepository.save(orderItem);
+		
+		return orderItem;
 	}
 
 }

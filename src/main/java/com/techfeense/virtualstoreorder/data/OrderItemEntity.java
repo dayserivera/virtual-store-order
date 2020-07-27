@@ -10,8 +10,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="ordered_item")
-public class OrderedItemEntity implements Serializable {
+@Table(name="order_item")
+public class OrderItemEntity implements Serializable {
 
 	private static final long serialVersionUID = -1744179762532424980L;
 
@@ -20,7 +20,7 @@ public class OrderedItemEntity implements Serializable {
 	private long id;
 	
 	@Column(nullable=false)
-	private long productId;
+	private String productId;
 	
 	@Column(nullable=false)
 	private double unitPrice;
@@ -42,11 +42,11 @@ public class OrderedItemEntity implements Serializable {
 		this.id = id;
 	}
 
-	public long getProductId() {
+	public String getProductId() {
 		return productId;
 	}
 
-	public void setProductId(long productId) {
+	public void setProductId(String productId) {
 		this.productId = productId;
 	}
 

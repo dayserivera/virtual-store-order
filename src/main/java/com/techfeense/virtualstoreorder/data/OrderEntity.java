@@ -41,7 +41,7 @@ public class OrderEntity implements Serializable{
 	private ORDER_STATUS status;
 	
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-	private List<OrderedItemEntity> orderedItens;
+	private List<OrderItemEntity> orderedItens;
 	
 	public long getId() {
 		return id;
@@ -91,11 +91,11 @@ public class OrderEntity implements Serializable{
 		this.status = status;
 	}
 
-	public List<OrderedItemEntity> getOrderedItens() {
+	public List<OrderItemEntity> getOrderedItens() {
 		return orderedItens;
 	}
 
-	public void setOrderedItens(List<OrderedItemEntity> orderedItens) {
+	public void setOrderedItens(List<OrderItemEntity> orderedItens) {
 		this.orderedItens = orderedItens;
 	}
 	
