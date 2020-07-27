@@ -7,4 +7,6 @@ public interface OrderService {
 	OrderEntity createOrder(OrderEntity order);
 
 	OrderItemEntity addOrderItem(OrderItemEntity orderItem);
+	
+	OrderEntity getOrder(String orderId);
 }

@@ -1,5 +1,8 @@
 package com.techfeense.virtualstoreorder.controllers;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -7,6 +10,8 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +23,8 @@ import com.techfeense.virtualstoreorder.model.AddOrderItemRequestModel;
 import com.techfeense.virtualstoreorder.model.AddOrderItemResponseModel;
 import com.techfeense.virtualstoreorder.model.CreateOrderRequestModel;
 import com.techfeense.virtualstoreorder.model.CreateOrderResponseModel;
+import com.techfeense.virtualstoreorder.model.DetailOrderItemResponseModel;
+import com.techfeense.virtualstoreorder.model.DetailOrderResponseModel;
 import com.techfeense.virtualstoreorder.service.OrderService;
 
 @RestController
@@ -38,6 +45,26 @@ public class OrderController {
 		CreateOrderResponseModel returnValue = modelMapper.map(order, CreateOrderResponseModel.class);
 		
 		return new ResponseEntity<>(returnValue, HttpStatus.CREATED);
+	}
+	
+	@GetMapping
+	public DetailOrderResponseModel getOrderDetails(@Valid @PathVariable String orderId) {
+		OrderEntity order = orderService.getOrder(orderId);
+		
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		
+		DetailOrderResponseModel returnValue = modelMapper.map(order, DetailOrderResponseModel.class);
+		
+		List<DetailOrderItemResponseModel> detailOrderItemResponseModelList = order.getOrderedItens()
+				  .stream()
+				  .map(product -> modelMapper.map(product, DetailOrderItemResponseModel.class))
+				  .collect(Collectors.toList());
+		
+		returnValue.setOrderItens(detailOrderItemResponseModelList);
+		
+		return returnValue;
+		
 	}
 	
 	@RequestMapping("/items")

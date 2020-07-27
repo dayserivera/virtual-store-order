@@ -42,4 +42,11 @@ public class OrderServiceImpl implements OrderService {
 		return orderItem;
 	}
 
+	@Override
+	public OrderEntity getOrder(String orderId) {
+		OrderEntity orderEntity = orderRepository.findByOrderId(orderId);
+		
+		return orderEntity;
+	}
+
 }
