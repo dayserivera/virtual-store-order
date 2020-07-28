@@ -43,6 +43,13 @@ public class OrderEntity implements Serializable{
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<OrderItemEntity> orderedItens;
 	
+	public OrderEntity() {
+	}
+	
+	public OrderEntity(long id) {
+		this.id = id;
+	}
+	
 	public long getId() {
 		return id;
 	}

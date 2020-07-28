@@ -48,6 +48,7 @@ public class OrderController {
 	}
 	
 	@GetMapping
+	@RequestMapping("/{orderId}")
 	public DetailOrderResponseModel getOrderDetails(@Valid @PathVariable String orderId) {
 		OrderEntity order = orderService.getOrder(orderId);
 		
@@ -56,12 +57,16 @@ public class OrderController {
 		
 		DetailOrderResponseModel returnValue = modelMapper.map(order, DetailOrderResponseModel.class);
 		
+		
 		List<DetailOrderItemResponseModel> detailOrderItemResponseModelList = order.getOrderedItens()
 				  .stream()
 				  .map(product -> modelMapper.map(product, DetailOrderItemResponseModel.class))
 				  .collect(Collectors.toList());
+		detailOrderItemResponseModelList.stream().forEach(e -> e.setOrderId(orderId));
 		
 		returnValue.setOrderItens(detailOrderItemResponseModelList);
+		
+		returnValue.setTotal(detailOrderItemResponseModelList.stream().mapToDouble(o -> o.getTotalPrice()).sum());
 		
 		return returnValue;
 		
