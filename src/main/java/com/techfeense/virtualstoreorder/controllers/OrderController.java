@@ -28,6 +28,7 @@ import com.techfeense.virtualstoreorder.model.CreateOrderRequestModel;
 import com.techfeense.virtualstoreorder.model.CreateOrderResponseModel;
 import com.techfeense.virtualstoreorder.model.DetailOrderItemResponseModel;
 import com.techfeense.virtualstoreorder.model.DetailOrderResponseModel;
+import com.techfeense.virtualstoreorder.model.RemoveOrderItemRequestModel;
 import com.techfeense.virtualstoreorder.service.OrderService;
 
 @RestController
@@ -50,8 +51,7 @@ public class OrderController {
 		return new ResponseEntity<>(returnValue, HttpStatus.CREATED);
 	}
 	
-	@GetMapping
-	@RequestMapping("/{orderId}")
+	@GetMapping("/{orderId}")
 	public ResponseEntity<DetailOrderResponseModel> getOrderDetails(@Valid @PathVariable String orderId) {
 		OrderEntity order = orderService.getOrder(orderId);
 		
@@ -75,15 +75,13 @@ public class OrderController {
 		
 	}
 	
-	@PutMapping
-	@RequestMapping("/{orderId}/close")
+	@PutMapping("/{orderId}/close")
 	public ResponseEntity<DetailOrderResponseModel> closeOrder(@Valid @PathVariable String orderId) {
 		ORDER_STATUS orderStatus = ORDER_STATUS.CLOSED;
 		return new ResponseEntity<>(updateOrderStatus(orderId, orderStatus), HttpStatus.OK);
 	}
 	
-	@PutMapping
-	@RequestMapping("/{orderId}/cancel")
+	@PutMapping("/{orderId}/cancel")
 	public ResponseEntity<DetailOrderResponseModel> cancelOrder(@Valid @PathVariable String orderId) {
 		ORDER_STATUS orderStatus = ORDER_STATUS.CANCELED;
 		return new ResponseEntity<>(updateOrderStatus(orderId, orderStatus), HttpStatus.OK);
@@ -112,8 +110,7 @@ public class OrderController {
 		return returnValue;
 	}
 	
-	@RequestMapping("/items")
-	@PostMapping
+	@PostMapping("/items")
 	public ResponseEntity<AddOrderItemResponseModel> addOrderItem(@Valid @RequestBody AddOrderItemRequestModel orderItemDetail){
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -130,8 +127,19 @@ public class OrderController {
 		return new ResponseEntity<>(returnValue, HttpStatus.CREATED);
 	}
 	
-	/*@RequestMapping("/items")
-	@DeleteMapping
-	public ResponseEntity<> removeItemFromOrder(@Valid)
-	*/
+	@DeleteMapping("/items")
+	public ResponseEntity removeItemFromOrder(@Valid @RequestBody RemoveOrderItemRequestModel removeOrderItemRequestModel) {
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		
+		OrderItemEntity orderItem = modelMapper.map(removeOrderItemRequestModel, OrderItemEntity.class);
+		orderItem.setOrder(new OrderEntity());
+		orderItem.getOrder().setOrderId(removeOrderItemRequestModel.getOrderId());
+		orderItem.setProductId(removeOrderItemRequestModel.getProductId());
+		
+		orderService.removeOrderItem(orderItem);
+		
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
 }

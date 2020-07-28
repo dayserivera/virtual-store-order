@@ -57,5 +57,11 @@ public class OrderServiceImpl implements OrderService {
 		
 		return orderEntity;
 	}
+	
+	@Override
+	public void removeOrderItem(OrderItemEntity orderItem) {
+		OrderItemEntity orderItemEntity = orderItemRepository.findByOrderOrderIdAndProductId(orderItem.getOrder().getOrderId(), orderItem.getProductId());
+		orderItemRepository.delete(orderItemEntity);
+	}
 
 }
