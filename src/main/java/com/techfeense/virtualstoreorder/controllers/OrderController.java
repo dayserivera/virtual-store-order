@@ -51,7 +51,7 @@ public class OrderController {
 	
 	@GetMapping
 	@RequestMapping("/{orderId}")
-	public DetailOrderResponseModel getOrderDetails(@Valid @PathVariable String orderId) {
+	public ResponseEntity<DetailOrderResponseModel> getOrderDetails(@Valid @PathVariable String orderId) {
 		OrderEntity order = orderService.getOrder(orderId);
 		
 		ModelMapper modelMapper = new ModelMapper();
@@ -70,22 +70,22 @@ public class OrderController {
 		
 		returnValue.setTotal(detailOrderItemResponseModelList.stream().mapToDouble(o -> o.getTotalPrice()).sum());
 		
-		return returnValue;
+		return new ResponseEntity<>(returnValue, HttpStatus.OK);
 		
 	}
 	
 	@PutMapping
 	@RequestMapping("/{orderId}/close")
-	public DetailOrderResponseModel closeOrder(@Valid @PathVariable String orderId) {
+	public ResponseEntity<DetailOrderResponseModel> closeOrder(@Valid @PathVariable String orderId) {
 		ORDER_STATUS orderStatus = ORDER_STATUS.CLOSED;
-		return updateOrderStatus(orderId, orderStatus);
+		return new ResponseEntity<>(updateOrderStatus(orderId, orderStatus), HttpStatus.OK);
 	}
 	
 	@PutMapping
 	@RequestMapping("/{orderId}/cancel")
-	public DetailOrderResponseModel cancelOrder(@Valid @PathVariable String orderId) {
+	public ResponseEntity<DetailOrderResponseModel> cancelOrder(@Valid @PathVariable String orderId) {
 		ORDER_STATUS orderStatus = ORDER_STATUS.CANCELED;
-		return updateOrderStatus(orderId, orderStatus);
+		return new ResponseEntity<>(updateOrderStatus(orderId, orderStatus), HttpStatus.OK);
 		
 	}
 
@@ -128,4 +128,9 @@ public class OrderController {
 		
 		return new ResponseEntity<>(returnValue, HttpStatus.CREATED);
 	}
+	
+	@RequestMapping("/items")
+	@PutMapping
+	
+	
 }
