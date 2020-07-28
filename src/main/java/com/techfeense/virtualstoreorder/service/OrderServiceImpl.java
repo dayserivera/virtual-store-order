@@ -49,4 +49,13 @@ public class OrderServiceImpl implements OrderService {
 		return orderEntity;
 	}
 
+	@Override
+	public OrderEntity updateOrderStatus(String orderId, ORDER_STATUS orderStatus) {
+		OrderEntity orderEntity = orderRepository.findByOrderId(orderId);
+		orderEntity.setStatus(orderStatus);
+		orderRepository.save(orderEntity);
+		
+		return orderEntity;
+	}
+
 }

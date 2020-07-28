@@ -13,10 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.techfeense.virtualstoreorder.data.ORDER_STATUS;
 import com.techfeense.virtualstoreorder.data.OrderEntity;
 import com.techfeense.virtualstoreorder.data.OrderItemEntity;
 import com.techfeense.virtualstoreorder.model.AddOrderItemRequestModel;
@@ -70,6 +72,43 @@ public class OrderController {
 		
 		return returnValue;
 		
+	}
+	
+	@PutMapping
+	@RequestMapping("/{orderId}/close")
+	public DetailOrderResponseModel closeOrder(@Valid @PathVariable String orderId) {
+		ORDER_STATUS orderStatus = ORDER_STATUS.CLOSED;
+		return updateOrderStatus(orderId, orderStatus);
+	}
+	
+	@PutMapping
+	@RequestMapping("/{orderId}/cancel")
+	public DetailOrderResponseModel cancelOrder(@Valid @PathVariable String orderId) {
+		ORDER_STATUS orderStatus = ORDER_STATUS.CANCELED;
+		return updateOrderStatus(orderId, orderStatus);
+		
+	}
+
+	private DetailOrderResponseModel updateOrderStatus(String orderId, ORDER_STATUS orderStatus) {
+		OrderEntity order = orderService.updateOrderStatus(orderId, orderStatus);
+		
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		
+		DetailOrderResponseModel returnValue = modelMapper.map(order, DetailOrderResponseModel.class);
+		
+		
+		List<DetailOrderItemResponseModel> detailOrderItemResponseModelList = order.getOrderedItens()
+				  .stream()
+				  .map(product -> modelMapper.map(product, DetailOrderItemResponseModel.class))
+				  .collect(Collectors.toList());
+		detailOrderItemResponseModelList.stream().forEach(e -> e.setOrderId(orderId));
+		
+		returnValue.setOrderItens(detailOrderItemResponseModelList);
+		
+		returnValue.setTotal(detailOrderItemResponseModelList.stream().mapToDouble(o -> o.getTotalPrice()).sum());
+		
+		return returnValue;
 	}
 	
 	@RequestMapping("/items")
