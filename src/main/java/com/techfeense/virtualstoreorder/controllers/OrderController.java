@@ -29,6 +29,7 @@ import com.techfeense.virtualstoreorder.model.CreateOrderResponseModel;
 import com.techfeense.virtualstoreorder.model.DetailOrderItemResponseModel;
 import com.techfeense.virtualstoreorder.model.DetailOrderResponseModel;
 import com.techfeense.virtualstoreorder.model.RemoveOrderItemRequestModel;
+import com.techfeense.virtualstoreorder.model.UpdateOrderItemRequestModel;
 import com.techfeense.virtualstoreorder.service.OrderService;
 
 @RestController
@@ -128,18 +129,30 @@ public class OrderController {
 	}
 	
 	@DeleteMapping("/items")
-	public ResponseEntity removeItemFromOrder(@Valid @RequestBody RemoveOrderItemRequestModel removeOrderItemRequestModel) {
+	public ResponseEntity removeOrderItem(@Valid @RequestBody RemoveOrderItemRequestModel removeOrderItemRequestModel) {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		
 		OrderItemEntity orderItem = modelMapper.map(removeOrderItemRequestModel, OrderItemEntity.class);
 		orderItem.setOrder(new OrderEntity());
 		orderItem.getOrder().setOrderId(removeOrderItemRequestModel.getOrderId());
-		orderItem.setProductId(removeOrderItemRequestModel.getProductId());
 		
 		orderService.removeOrderItem(orderItem);
 		
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	@PutMapping("/items")
+	public ResponseEntity updateOrderItem(@Valid @RequestBody UpdateOrderItemRequestModel updateOrderItemRequestModel) {
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		
+		OrderItemEntity orderItem = modelMapper.map(updateOrderItemRequestModel, OrderItemEntity.class);
+		orderItem.setOrder(new OrderEntity());
+		orderItem.getOrder().setOrderId(updateOrderItemRequestModel.getOrderId());
+		
+		orderService.updateOrderItem(orderItem);
+		
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 }

@@ -64,4 +64,14 @@ public class OrderServiceImpl implements OrderService {
 		orderItemRepository.delete(orderItemEntity);
 	}
 
+	@Override
+	public void updateOrderItem(OrderItemEntity orderItem) {
+		OrderItemEntity orderItemEntity = orderItemRepository.findByOrderOrderIdAndProductId(orderItem.getOrder().getOrderId(), orderItem.getProductId());
+		orderItemEntity.setQuantity(orderItem.getQuantity());
+		orderItemEntity.setUnitPrice(orderItem.getUnitPrice());
+		orderItemEntity.setTotalPrice(orderItem.getQuantity() * orderItem.getUnitPrice());
+		
+		orderItemRepository.save(orderItemEntity);
+	}
+
 }

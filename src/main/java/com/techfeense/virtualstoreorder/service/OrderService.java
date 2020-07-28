@@ -14,4 +14,6 @@ public interface OrderService {
 	OrderEntity updateOrderStatus(String orderId, ORDER_STATUS orderStatus);
 
 	void removeOrderItem(OrderItemEntity orderItem);
+
+	void updateOrderItem(OrderItemEntity orderItem);
 }
